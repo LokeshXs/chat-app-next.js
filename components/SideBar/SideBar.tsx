@@ -38,6 +38,7 @@ export default function SideBar({
       setIsLoading(true);
       const response = await fetch(`${BASE_URL}/api/messages`, {
         method: "GET",
+        cache:"no-cache"
       });
 
       let messages = await response.json();
