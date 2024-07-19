@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String         @id @default(cuid())
+  name                 String?
+  email                String         @unique
+  emailVerified        Boolean?
+  password             String?
+  image                String?
+  accounts             Account[]
+  friends              Friends[]      @relation("UserFriends")
+  friendOf             Friends[]      @relation("FriendOf")
+  sentMessages         Message[]      @relation("SentMessages")
+  receivedMessages     Message[]      @relation("ReceivedMessages")
+  receivedChatRequests ChatRequests[] @relation("ReceivedChatRequests")
+  sentChatRequests     ChatRequests[] @relation("SentChatRequests")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Friends {
+  user_id    String
+  friend_id  String
+  created_at DateTime @default(now())
+
+  user   User @relation("UserFriends", fields: [user_id], references: [id])
+  friend User @relation("FriendOf", fields: [friend_id], references: [id])
+
+  @@id([user_id, friend_id])
+}
+
+model Message {
+  messageId   Int      @id @default(autoincrement())
+  message     String
+  recepientId String
+  senderId    String
+  timeDate    DateTime
+
+  receiverUser User @relation("ReceivedMessages", fields: [recepientId], references: [id])
+  senderUser   User @relation("SentMessages", fields: [senderId], references: [id])
+}
+
+model ChatRequests {
+  id       Int    @id @default(autoincrement())
+  status   String
+  from_id  String
+  to_id    String
+  toUser   User   @relation("ReceivedChatRequests", fields: [to_id], references: [id])
+  fromUser User   @relation("SentChatRequests", fields: [from_id], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
