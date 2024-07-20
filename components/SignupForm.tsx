@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import PasswordInput from "./PasswordInput";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export function SignUpForm({
   action,
@@ -31,6 +32,7 @@ export function SignUpForm({
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const router = useRouter();
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -50,6 +52,9 @@ export function SignUpForm({
         }
         if (res.status === "success") {
           setSuccessMessage(res.message);
+
+          router.push("/signin")
+
         }
       });
     });

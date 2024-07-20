@@ -1,7 +1,9 @@
 import {signUpAction } from "@/actions/authentication";
 
 import { SignUpForm } from "@/components/SignupForm";
+import { BASE_URL } from "@/config/config";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function SignUpPage() {
   return (
@@ -17,8 +19,12 @@ export default function SignUpPage() {
           <div className=" flex-1 bg-primary-foreground rounded-bl-[80px]  p-12 flex flex-col ">
             <h1 className=" text-3xl font-medium text-center">Sign up</h1>
             
-           <div className="flex-1 flex items-center justify-center ">
+           <div className="flex-1 flex items-center justify-center relative ">
            <SignUpForm action={signUpAction} />
+
+           <Link href={BASE_URL} className=" absolute bottom-0 text-primary">
+            Go to Home page
+            </Link>
            </div>
             
           </div>

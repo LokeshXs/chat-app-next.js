@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import { CircleX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toggleSideBar } from "@/store/ChatBarSlice";
+import { Skeleton } from "../ui/skeleton";
 
 export default function SideBar({
   allFriends,
@@ -62,7 +63,14 @@ export default function SideBar({
   }, [allFriends, dispatch]);
 
   if (isLoading) {
-    return <p>loading messages</p>;
+    return (
+      <div className="border-r-[1px] px-4 py-12 flex flex-col gap-4">
+        <Skeleton className="w-[360px] h-[60px] rounded-lg" />
+        <Skeleton className="w-[360px] h-[60px] rounded-lg" />
+        <Skeleton className="w-[360px] h-[60px] rounded-lg" />
+        <Skeleton className="w-[360px] h-[60px] rounded-lg" />
+      </div>
+    );
   }
 
   return (

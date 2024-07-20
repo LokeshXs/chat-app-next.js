@@ -17,64 +17,29 @@ import { Input } from "@/components/ui/input";
 import { chatInputFormSchema } from "@/lib/zod";
 import { useSession } from "next-auth/react";
 import { PlaceholdersAndVanishInput } from "./VanishInput";
+import useWebSocket from "@/hooks/useWebSocket";
+import { Send } from "lucide-react";
+import { FaSquareXTwitter } from "react-icons/fa6";
+import Link from "next/link";
 
 export default function ChatComponent({
   session,
 }: {
   session: Session | null;
 }) {
-  // const session = useSession();
   if (!session) {
     throw new Error("Cannot verify the logged in user");
   }
+
   const user = session.user;
-  console.log(session);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+
+  const { socket } = useWebSocket(user.userId);
+
   const recepientId = useSelector(
     (state: RootState) => state.chatObject.recepientId
   );
+
   const dispatch = useDispatch();
-
-  //for making sure that useeffect run once
-  const effectCalled = useRef<boolean>(false);
-  const form = useForm<z.infer<typeof chatInputFormSchema>>({
-    resolver: zodResolver(chatInputFormSchema),
-    defaultValues: {
-      message: "",
-    },
-  });
-
-  useEffect(() => {
-    const userid = user?.userId;
-
-    const newSocket = new WebSocket(`${WebSocketServerUrl}?id=${userid}`);
-
-    newSocket.onopen = () => {
-      console.log("connection is established");
-    };
-
-    newSocket.onmessage = (data: MessageEvent<string>) => {
-      const parsedData: ChatMessage = JSON.parse(data.data);
-      console.log(`Message received: ${parsedData.message}`);
-
-      // if (parsedData.error) {
-      //   console.error(parsedData.error);
-      //   return;
-      // }
-
-      dispatch(addMessage(parsedData));
-    };
-
-    newSocket.onclose = (event) => {
-      console.log("WebSocket connection closed:", event);
-    };
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.close();
-    };
-  }, [user?.userId, dispatch]);
 
   function sendMessage(values: z.infer<typeof chatInputFormSchema>) {
     console.log(user);
@@ -105,35 +70,25 @@ export default function ChatComponent({
   if (recepientId === "") return;
 
   return (
-    <div className=" absolute bottom-6 w-full">
-      <PlaceholdersAndVanishInput placeholders={placeholders} session={session} />
-      {/* <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(sendMessage)}
-          className="max-w-[60%] max-xl:max-w-[90%] max-md:max-w-full px-4 w-full mx-auto flex gap-2 items-center "
-        >
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem className=" flex-1 w-full">
-                <FormControl>
-                  <Input placeholder="Type a message ..." className=" text-lg h-10" {...field} />
-                 
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <Button
-            variant="ghost" 
-            size="icon"
-            type="submit"
-            className=" bg-primary rounded-full w-12 h-12 hover:bg-primary"
-          >
-            <SendHorizontal className=" text-primary-foreground" />
+    <div className=" absolute bottom-2 max-sm:bottom-1 w-full">
+      {socket ? (
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          session={session}
+        />
+      ) : (
+        <div className="flex flex-col items-center gap-2 justify-center bg-muted py-2 rounded-lg text-destructive dark:text-red-400 max-md:px-2 text-center max-md:text-sm">
+          <p>Sorry, but we are not able to make connection to our server</p>
+          <Link href="https://x.com/singh_loke28577" target="_blank">
+          <Button asChild>
+            <span className=" flex items-center gap-2">
+              <p>DM to Lokesh now</p>
+              <FaSquareXTwitter className=" w-6 h-6" />
+            </span>
           </Button>
-        </form>
-      </Form> */}
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

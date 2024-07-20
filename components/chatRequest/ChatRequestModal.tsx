@@ -70,7 +70,7 @@ export default function ChatRequestModal() {
 
     searchUserAction({ email: debounceValue }).then((res) => {
       if (res.status === "success") {
-        console.log(res);
+       
 
         setFetchedUsers(res.data);
       }
@@ -80,7 +80,7 @@ export default function ChatRequestModal() {
 
   useEffect(() => {
     if (searchValue.length !== 0) {
-      console.log(searchValue);
+
       setFetchedUsers([]);
       setFetching(true);
     }
@@ -91,7 +91,7 @@ export default function ChatRequestModal() {
   };
 
   function onSubmit(formData: z.infer<typeof searchUserSchema>) {
-    console.log(formData);
+
     startTransition(() => {
       sendChatRequest(formData).then((res) => {
         if (res.status === "success") {

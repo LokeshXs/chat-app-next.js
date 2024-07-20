@@ -198,7 +198,7 @@ export function PlaceholdersAndVanishInput({
     throw new Error("Cannot verify the logged in user");
   }
   const user = session.user;
-  console.log(session);
+  
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const recepientId = useSelector(
     (state: RootState) => state.chatObject.recepientId
