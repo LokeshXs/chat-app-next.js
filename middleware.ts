@@ -13,7 +13,6 @@ export async function middleware(req: NextRequest) {
   const session = await auth();
   const isLoggedIn: Boolean = session === null ? false : true;
 
-  console.log(isLoggedIn);
 
   const isApiAuthRoute = API_AUTH_PREFIX.includes(nextUrl.pathname);
 
